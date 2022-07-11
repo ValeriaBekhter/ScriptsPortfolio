@@ -1,11 +1,16 @@
 ---
-title: "lum_cont_comp"
-author: "VB"
-date: "14/06/2022"
+title: "lum_cont_comp_calculus"
+author: "Valeria Bekhtereva"
 output: html_document
 ---
 
 loads the file with the image list and all specs and calculates average luminance, contrast, and complexity for each image category (pleasaant, unpleasant, neutral images)
+
+load libraries:
+```{r}
+library(tidyverse)
+```
+
 
 ```{r}
 base_dir <- "/Users/valeria/Desktop/ValeriaDocs/lab2020/alphaflick/psychopy/alphaflick_experiment"
@@ -13,10 +18,9 @@ filepath <- file.path(base_dir,"piclist.csv") # construct the file name
 
 imagefile <- read.csv(filepath, header = TRUE, sep = ",", 
          dec = ".")
-#getwd()
 ```
 
-calculate average INTACT luminance, contrast, and compexity:
+calculate average INTACT luminance, contrast, and complexity:
 
 ```{r}
 
