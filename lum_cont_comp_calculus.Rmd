@@ -1,0 +1,122 @@
+---
+title: "lum_cont_comp"
+author: "VB"
+date: "14/06/2022"
+output: html_document
+---
+
+loads the file with the image list and all specs and calculates average luminance, contrast, and complexity for each image category (pleasaant, unpleasant, neutral images)
+
+```{r}
+base_dir <- "/Users/valeria/Desktop/ValeriaDocs/lab2020/alphaflick/psychopy/alphaflick_experiment"
+filepath <- file.path(base_dir,"piclist.csv") # construct the file name
+
+imagefile <- read.csv(filepath, header = TRUE, sep = ",", 
+         dec = ".")
+#getwd()
+```
+
+calculate average INTACT luminance, contrast, and compexity:
+
+```{r}
+
+image_lum_long <- pivot_longer(imagefile,
+                                      cols = mean_lum_intact_Blue:mean_lum_intact_Green:mean_lum_intact_Red,
+                                      names_to = "luminance", 
+                                      values_to = "units") %>%
+  
+                                group_by(image_id) %>%
+                                summarise(mean_lum=mean(units)) # average across 3 lum channels for each image
+                               
+image_cont_long <- pivot_longer(imagefile,
+                                      cols = std_intact_B:std_intact_R,
+                                      names_to = "contrast", 
+                                      values_to = "units") %>%
+  
+                                group_by(image_id) %>%
+                                summarise(mean_contrast=mean(units)) # average across 3 lum channels for each image
+  
+
+image_complex_long <- pivot_longer(imagefile,
+                                      cols = complexity,
+                                      values_to = "rating") %>%
+  
+                                group_by(image_id) %>%
+                                summarise(mean_complexity=mean(rating)) # average across 3 lum channels for each image
+  
+
+```
+
+calculate average SCRAMBLED luminance, contrast:
+
+```{r}
+
+image_scr_lum_long <- pivot_longer(imagefile,
+                                      cols = mean_lum_scr_Blue:mean_lum_scr_Red,
+                                      names_to = "scr_luminance", 
+                                      values_to = "units") %>%
+  
+                                group_by(scrambled) %>%
+                                summarise(mean_lum=mean(units)) # average across 3 lum channels for each image
+
+
+image_scr_cont_long <- pivot_longer(imagefile,
+                                      cols = std_scr_B:std_scr_R,
+                                      names_to = "scr_contrast", 
+                                      values_to = "units") %>%
+  
+                                group_by(scrambled) %>%
+                                summarise(mean_contrast=mean(units)) # average across 3 lum channels for each image
+ 
+```
+
+join things up for scrambled and intact:
+
+```{r}
+# for scrambled:
+ image_scr_lum_long %>%
+         left_join(image_scr_cont_long, by = c("scrambled")) -> lum_cont_scr
+
+# for intact:
+image_lum_long %>%
+  left_join(image_cont_long, by = c("image_id")) %>%
+  left_join(image_complex_long, by = c("image_id")) -> lum_cont_compl_intact
+```
+
+calculate mean lum, contrast, complexity for each emo category separately:
+
+```{r}
+
+# for scrambled:
+lum_cont_scr_condavg <- lum_cont_scr %>%
+                        mutate(emotion = 
+                                 ifelse(grepl("en", lum_cont_scr$scrambled), "neutral", # write neutral
+                                        ifelse(grepl("eu", lum_cont_scr$scrambled), "unpleasant", "pleasant") # write unpleasant, otherwise pleasant
+                                        ) 
+                              ) %>%
+                        group_by(emotion) %>%
+                        summarise(lumavg=mean(mean_lum), contavg=mean(mean_contrast))
+
+
+# for intact:
+lum_cont_compl_condavg <- lum_cont_compl_intact %>%
+                        mutate(emotion = 
+                                 ifelse(grepl("en", lum_cont_scr$scrambled), "neutral",
+                                        ifelse(grepl("eu", lum_cont_scr$scrambled), "unpleasant", "pleasant")
+                                        ) 
+                              ) %>%
+                        group_by(emotion) %>%
+                        summarise(lumavg=mean(mean_lum), contavg=mean(mean_contrast), complavg=mean(mean_complexity))
+
+```
+
+grandmeans:
+
+```{r}
+lum_cont_scr_condavg %>% 
+  summarise(scr_lumgrandavg = mean(lumavg), scr_contgrandavg = mean(contavg))
+
+lum_cont_compl_condavg %>% 
+  summarise(int_lumgrandavg = mean(lumavg), int_contgrandavg = mean(contavg), int_complgrandavg = mean(complavg))
+```
+
