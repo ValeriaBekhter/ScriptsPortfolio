@@ -1,5 +1,5 @@
 The script is written in R, with the goal of providing researchers with open-source, reliable methods
-for adjusting the luminance and contrast of image stimuli, essential for psychophysiological and neuroimaging studies.
+for calculating the luminance and contrast of image stimuli, essential for psychophysiological and neuroimaging studies.
 The code calculates average luminance, contrast, and complexity across different image categories (i.e. affective vs neutral image scenes).
 
 The research was published in:
