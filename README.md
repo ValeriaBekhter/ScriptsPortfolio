@@ -5,4 +5,5 @@ The code was used to calculate average luminance, contrast, and complexity acros
 Bekhtereva V., Müller M. M (2017). Bringing color to emotion: The influence of color on attentional bias to briefly presented emotional images. Cognitive, Affective, and Behavioral Neuroscience, 17(5):1028-1047.
 
 
-alphaflick.python experimental presentation script is written in Python.
+alphaflick and constants_alpha were created in Python to run experimental programme in which participants were shown a series of flickering images at 15 and 20 Hz
+and were asked to rate them according to how pleasant/unpleasant and emotionally evocative they were.
