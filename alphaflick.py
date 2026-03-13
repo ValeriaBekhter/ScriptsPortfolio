@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Nov  4 12:05:19 2020
-
-@author: valeria
-"""
 
 # Experimental stimulation script
 
@@ -40,24 +33,6 @@ line += '\n'
 # write the header to the log file 
 log.write(line) 
 
-
-
-# # alpha berger maneauvre instructions:
-# alpha_instructions1 = "Welcome!\n\nIn this short pre-experimental session, you'll be asked to sit for a few minutes with your eyes closed before we proceed with the experiment. \ \n\nTo start press any button and then close your eyes!" 
-# alpha_text1 = TextStim(disp, text=alpha_instructions1, color=FGC, height=24) 
-# # present the instructions
-# alpha_text1.draw()
-# disp.flip()
-# # wait for any old keypress 
-# waitKeys(maxWait=float('inf'), keyList=None, timeStamped=True)  # wait for ANY KEY to be pressed 
-# alpha_instructions2 = "Please now close your eyes..." 
-# alpha_text2 = TextStim(disp, text=alpha_instructions2, color=FGC, height=24) 
-# # present the instructions
-# alpha_text2.draw()
-# disp.flip()
-# print ('send marker: close your eyes') # SEND MARKER !!!
-# # wait for this long:
-# wait(ALPHATIME) # wait for 20 sec  
 
 
 
@@ -108,7 +83,6 @@ stimplan=pd.concat([piclist_total, alltrials_df], axis=1, ignore_index=True) # c
 # do the randomisation in the same way for every subject:
 np.random.seed(VPNum)
 
-# Do I need any more restrictions on the image/cond order?
 stimplan_randomised = stimplan.sample(frac = 1) # randomised order should now be reproducible for each subject
 stimplan_randomised.columns=['scrambled','intact','image_id','complexity','description','content','lum_int_blue','lum_int_green','lum_int_red','std_int_blue','std_int_green','std_int_red','lum_scr_blue','lum_scr_green','lum_scr_red','std_scr_blue','std_scr_green','std_scr_red','valence','frequency','switchcycle'] # give the columns proper names!
 
@@ -128,22 +102,6 @@ stimplan_randomised.reset_index(inplace=True) # stimplan_randomised.set_index = 
 file=str('../alphaflick_experiment/' + 'imagelist_randomised_sub_' + str(VPNum) + '.csv')
 stimplan_randomised.to_csv(file)
    
-
-#############################################################
-## Is 20 Hz a good idea b/c of 60 Hz refresh/harmocis or subharmonics??? TWo diff freqs cannot be too much apart I think,
-# coz might have diff impact on AROUSAL/ATTENTION/ratings??
-# what do we do with the ERP to the image change onset? what if alpha effects are there/contaminated? Is there any chance of fading in/out?
-# for 60 refresh, only two options: 15 and 20 Hz
-# for 80 refresh, could be : 16 Hz and 20 Hz
-# trial length? 4000 ms? Any influence on alpha if many trials have the same valence?
-# how do we account for diff.spatial frequency content/picture content across the pic categories? should we stick to 1 emo valence only?
-# do we need any other task here? problems with just a passive viewing / eye movements etc.
-# do we want to keep scrambled part of the trial in? or no scrambling at all?
-# do we need to have 2 freqs tested in one exp (or just a pilot with 2 freqs will do)? With 2 freqs, each image needs to be shown twice! MAybe for
-# the actual exp-t we should have unpl and pl conds and just one freq of 20 Hz?
-# we have to introduce some task on a fixation? to maintain the gaze? look up how it is done in passive veiwing oaradigms to ensure fixation
-#############################################################
-
 
 
 BlockLength=40 #
@@ -190,10 +148,10 @@ for i_trial, content in stimplan_randomised.iloc[0:].iterrows(): # !!! use stimp
     #Marker('start') # from now on the program knows, that we start recording and activated the function 'Marker'!!!
     print("this is Trial: ", (i_trial+1), " ","from stimplan row: ", i_trial, "Cond: ", stimplan_randomised.condition[i_trial], "Image: ", stimplan_randomised.image_id[i_trial])
        
-    # Do I need some kind of warning befire the trial beginning?
+    
     fixmark.draw() # these commands only work when placed before PreTrialInterval & wait below
     disp.flip()
-    # would this suffice?
+    
     PreTrialInterval=650+math.ceil(random.uniform(0,1)*600) # varies from 650 to 1250?
     wait(PreTrialInterval/1000) # convert to sec
     imagescr = ImageStim(disp, image=stimplan_randomised.scrambled[i_trial]) # create an image to present
@@ -218,7 +176,7 @@ for i_trial, content in stimplan_randomised.iloc[0:].iterrows(): # !!! use stimp
                 else:
                     disp.flip()
                     
-            else: # if it it's after swtich period but cycle frame is still < 2:   
+            else: # if it's after swtich period but cycle frame is still < 2:   
                 if FramesBefSwitch % FreqDiv_15Pics < FramesOn_15Pics:
                     imageint.draw() # fill the screen with a int image
                     
@@ -259,7 +217,6 @@ for i_trial, content in stimplan_randomised.iloc[0:].iterrows(): # !!! use stimp
                
                        
 
-    # how do I make the ITI jittered either here or at the beginning of the trial?    
     for FrameNr in range(1,60):  # just a 1000ms blank screen before the instruction for valence/arousal:
         fixmarkblink.draw()  
         disp.flip()
@@ -268,7 +225,7 @@ for i_trial, content in stimplan_randomised.iloc[0:].iterrows(): # !!! use stimp
     SAM_valence = ImageStim(disp, image='../SAM/SAM_Valenz.png', size=(600,115))
     SAM_valence.draw() # fill the screen with a int image
     valenceimonset=disp.flip()    
-   # wait(SAMDISPLAYTIME) # do I want a fixed dispaly time???  
+   # wait(SAMDISPLAYTIME) # 
    
    # wait until response 
     resplist_V = waitKeys(maxWait=float('inf'), keyList=['1','2','3','4','5','6','7','8','9'], \
